@@ -6,3 +6,4 @@ On the to-do list / wishlist:
 - if you end up accidentally capturing the whole graph this way, option to configure a maximum link distance/hops from the starting point
 - supports attachments being stored in a separate folder
 - auto-renders any Excalidraw files to images (svg?) .. maybe add a link to the source file too
+- zero requirements on how you should use/format your Obsidian vault .. should just work
