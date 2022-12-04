@@ -99,7 +99,9 @@ def find_linked_file(
 def find_file(name: str, path: str) -> Optional[str]:
     for root, dirs, files in os.walk(path):
         if name in files:
-            return os.path.join(root, name)
+            abs_path = os.path.join(root, name)
+            rel_path = os.path.relpath(abs_path, path)
+            return rel_path
 
 
 def checked_path(file_path: str, vault_path: str) -> Optional[str]:
@@ -174,7 +176,7 @@ def extract_json_from_excalidraw_md(file_path: str) -> str:
                     json_contents += line
 
     out_path = file_path[:-3]
-    with open(file_path[:-3], "w") as out_f:
+    with open(file_path[:-3], "w", encoding="utf-8") as out_f:
         out_f.write(json_contents)
 
     return out_path

@@ -36,6 +36,11 @@ def export_obsidian_to_mkdocs(
     process_file(starting_note, vault_path, wiki_path, [])
 
     # Generate the MkDocs site
+    shutil.copyfile(
+        os.path.join(os.path.dirname(__file__), "../index_default.md"),
+        os.path.join(wiki_path, "index.md"),
+    )
+
     config_file = os.path.join(output_path, "mkdocs.yml")
     if not os.path.exists(config_file):
         config_template = os.path.join(
@@ -126,15 +131,18 @@ def process_link(
         link.path = rel_path
         rendered_link = render_image_link(link)
     if file_path.endswith(".excalidraw.md"):
-
-        src_link = Link(
-            path=link.path, alias="Excalidraw source file", anchor=None
-        )
+        rel_path = rel_path[:-3]  # Strip the .md extension
+        src_link = Link(path=rel_path, alias="Excalidraw source", anchor=None)
         src_rendered = render_link(src_link)
-        link.path = link.path + ".svg"
+        link.path = rel_path + ".svg"
         img_rengered = render_image_link(link)
 
-        rendered_link = f"{img_rengered}\n\n({src_rendered})"
+        link.alias = "Full-size image"
+        img_src_rendered = render_link(link)
+
+        rendered_link = (
+            f"{img_rengered}\n\n{img_src_rendered} | {src_rendered}"
+        )
     else:
         if not link.alias:
             link.alias = link.path
