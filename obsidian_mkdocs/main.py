@@ -17,6 +17,8 @@ from obsidian_mkdocs.utils import (
     render_image_link,
     find_linked_file,
     markdown_fix_blank_lines,
+    extract_json_from_excalidraw_md,
+    Link,
 )
 
 
@@ -123,17 +125,38 @@ def process_link(
     if any([file_path.endswith(ext) for ext in img_exts]):
         link.path = rel_path
         rendered_link = render_image_link(link)
+    if file_path.endswith(".excalidraw.md"):
+
+        src_link = Link(
+            path=link.path, alias="Excalidraw source file", anchor=None
+        )
+        src_rendered = render_link(src_link)
+        link.path = link.path + ".svg"
+        img_rengered = render_image_link(link)
+
+        rendered_link = f"{img_rengered}\n\n({src_rendered})"
     else:
         if not link.alias:
             link.alias = link.path
         link.path = rel_path
         rendered_link = render_link(link)
-    # TODO convert Excalidraw images
 
     if file_path not in visited_files:
         os.makedirs(out_abs_dir, exist_ok=True)
         shutil.copyfile(abs_path, out_abs_path)
-        if file_path.endswith(".md"):
+
+        if file_path.endswith(".excalidraw.md"):
+            json_file_path = extract_json_from_excalidraw_md(out_abs_path)
+            os.remove(out_abs_path)
+            return_code = os.system(f'excalidraw_export "{json_file_path}"')
+
+            if return_code != 0:
+                logging.warning(
+                    f"Could not convert Excalidraw drawing to .svg ;"
+                    f"is the excalidraw_export Node.js package installed? "
+                    f"({file_path})"
+                )
+        elif file_path.endswith(".md"):
             # Do the recursive step
             process_file(file_path, vault_path, output_path, visited_files)
 

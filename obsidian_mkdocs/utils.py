@@ -154,7 +154,27 @@ def markdown_fix_blank_lines(content: str):
         if not was_in_list and in_list:  # Start of list
             line = "\n" + line
         elif was_in_list and not in_list:  # End of list
-            line = line + "\n"
+            line = "\n" + line
 
         new_text += line
     return new_text
+
+
+def extract_json_from_excalidraw_md(file_path: str) -> str:
+    in_json = False
+    json_contents = ""
+    with open(file_path, "r", encoding="utf-8") as f:
+        for line in f.readlines():
+            if line == "```json\n":
+                in_json = True
+            elif line == "```\n":
+                in_json = False
+            else:
+                if in_json:
+                    json_contents += line
+
+    out_path = file_path[:-3]
+    with open(file_path[:-3], "w") as out_f:
+        out_f.write(json_contents)
+
+    return out_path
