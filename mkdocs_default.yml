@@ -1,0 +1,25 @@
+site_name: My Obsidian Notes
+site_url: http://127.0.0.1:8000
+site_dir: ./public
+docs_dir: ./wiki
+
+theme:
+  name: material
+  palette:
+    primary: yellow
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - tables
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  - search
